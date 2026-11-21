@@ -1,0 +1,14 @@
+# Pipelines Logstash du projet PrediMaint (même principe que le Lab 2, mission 7).
+# Chaque pipeline a son propre pipeline.id : ses inputs et outputs restent isolés.
+# Après toute modification de ce fichier : docker compose restart logstash
+
+- pipeline.id: sensors
+  path.config: "/usr/share/logstash/pipeline/sensors.conf"
+  pipeline.workers: 2
+  pipeline.batch.size: 250
+  # File persistante sur disque : si Logstash ou Elasticsearch s'arrête, les événements
+  # déjà lus dans Kafka ne sont pas perdus, ils sont rejoués au redémarrage.
+  queue.type: persisted
+  queue.max_bytes: 256mb
+  # Dead letter queue : garde les documents refusés par Elasticsearch (erreur de mapping).
+  dead_letter_queue.enable: true

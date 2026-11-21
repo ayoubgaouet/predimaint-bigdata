@@ -1,0 +1,38 @@
+{
+  "index_patterns": ["predimaint-sensors-*"],
+  "priority": 200,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "refresh_interval": "1s"
+    },
+    "mappings": {
+      "dynamic": false,
+      "properties": {
+        "@timestamp":                 { "type": "date" },
+        "machine_id":                 { "type": "keyword" },
+        "categorie":                  { "type": "keyword" },
+        "temperature":                { "type": "float" },
+        "vibration":                  { "type": "float" },
+        "pression":                   { "type": "float" },
+        "puissance_kw":               { "type": "float" },
+        "bruit_db":                   { "type": "float" },
+        "niveau":                     { "type": "keyword" },
+        "depassements":               { "type": "keyword" },
+        "seuil_alerte_temperature":   { "type": "float" },
+        "seuil_critique_temperature": { "type": "float" },
+        "tags":                       { "type": "keyword" },
+        "kafka": {
+          "properties": {
+            "partition": { "type": "integer" },
+            "offset":    { "type": "long" }
+          }
+        }
+      }
+    }
+  },
+  "_meta": {
+    "description": "Mesures capteurs PrediMaint, un index par jour (pipeline Logstash sensors)"
+  }
+}

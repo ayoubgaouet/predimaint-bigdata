@@ -1,0 +1,3 @@
+# Client Kafka officiel de Confluent (basé sur librdkafka, écrit en C) :
+# assez rapide pour les tests de débit (plusieurs milliers de messages/s sous Windows).
+confluent-kafka==2.6.1

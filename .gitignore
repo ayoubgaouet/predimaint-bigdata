@@ -1,0 +1,30 @@
+# --- Environnement virtuel du simulateur (recréé avec simulator/requirements.txt) ---
+.venv/
+venv/
+
+# --- Fichiers de travail du simulateur (pannes en direct) ---
+simulator/commandes_pannes.json
+simulator/commandes_pannes.tmp
+simulator/.simulateur_actif
+
+# --- Jeu Kaggle brut et préparé : licence « Unknown », ~90 Mo ---
+# Régénérés par data_prep/preparer_donnees.py ; seul data/echantillon/ est versionné.
+data/azure_pdm/
+data/prepared/
+
+# --- Cache Maven de Spark (connecteur spark-sql-kafka, ~110 Mo) ---
+spark/.ivy2/
+.ipynb_checkpoints/
+spark-warehouse/
+metastore_db/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+
+# --- Éditeurs et système ---
+.idea/
+.vscode/
+*.log
+Thumbs.db
+desktop.ini

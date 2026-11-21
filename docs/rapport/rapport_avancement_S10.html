@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Rapport d'avancement – Mini-projet Big Data – S10</title>
+<style>
+  @page { size: A4; margin: 18mm 17mm 20mm 17mm;
+          @bottom-center { content: "Rapport d'avancement · Mini-projet Big Data · page " counter(page) " / " counter(pages);
+                           font: 8.5pt "Segoe UI", Arial, sans-serif; color: #7B8794; } }
+  :root { --bleu: #2B6CB0; --encre: #1F2933; --gris: #52606D; --trait: #D9E2EC; --fond: #F4F7FB; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Calibri, Arial, sans-serif; font-size: 10.3pt; line-height: 1.45;
+         color: var(--encre); margin: 0; }
+  h1 { font-size: 21pt; margin: 0 0 4px; color: var(--encre); line-height: 1.2; }
+  h2 { font-size: 13.5pt; color: var(--bleu); margin: 20px 0 8px; padding-bottom: 4px;
+       border-bottom: 2px solid var(--trait); break-after: avoid; }
+  h3 { font-size: 11pt; margin: 14px 0 5px; break-after: avoid; }
+  p { margin: 0 0 7px; }
+  ul { margin: 0 0 8px; padding-left: 20px; }
+  li { margin: 2px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 9.4pt; break-inside: avoid; }
+  tr { break-inside: avoid; }
+  th { background: var(--fond); text-align: left; font-weight: 600; color: var(--gris);
+       border-bottom: 1.5px solid var(--trait); padding: 5px 7px; }
+  td { border-bottom: 1px solid var(--trait); padding: 5px 7px; vertical-align: top; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.9pt; background: #EEF2F6;
+         padding: 0 3px; border-radius: 3px; }
+  pre { font-family: Consolas, monospace; font-size: 8.4pt; background: #F4F6F8; border: 1px solid var(--trait);
+        border-radius: 5px; padding: 8px 10px; white-space: pre-wrap; margin: 4px 0 10px; break-inside: avoid; }
+  .entete { border-left: 5px solid var(--bleu); padding: 4px 0 4px 14px; margin-bottom: 14px; }
+  .sous-titre { color: var(--gris); font-size: 10.5pt; margin: 2px 0 0; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 24px; font-size: 9.6pt; color: var(--gris);
+          background: var(--fond); padding: 9px 13px; border-radius: 6px; margin: 10px 0 14px; }
+  .meta b { color: var(--encre); font-weight: 600; }
+  .resume { background: #FFFBEA; border: 1px solid #F0D98C; border-radius: 6px; padding: 9px 13px; margin-bottom: 6px; }
+  .etat { display: inline-block; font-size: 8.4pt; font-weight: 700; padding: 1px 7px; border-radius: 10px; white-space: nowrap; }
+  .fait { background: #DDF3E4; color: #1E7B45; }
+  .partiel { background: #FFF0CC; color: #8A5A00; }
+  .afaire { background: #ECEFF3; color: #52606D; }
+  figure { margin: 8px 0 12px; text-align: center; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--trait); border-radius: 6px; }
+  figcaption { font-size: 8.8pt; color: var(--gris); margin-top: 4px; }
+  .chiffres { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0 12px; }
+  .chiffre { background: var(--fond); border-radius: 6px; padding: 8px 10px; }
+  .chiffre b { display: block; font-size: 15pt; color: var(--bleu); line-height: 1.15; }
+  .chiffre span { font-size: 8.6pt; color: var(--gris); }
+  .saut { break-before: page; }
+  .note { font-size: 9pt; color: var(--gris); }
+</style>
+</head>
+<body>
+
+<div class="entete">
+  <h1>Rapport d'avancement · Mini-projet Big Data</h1>
+  <p class="sous-titre">Étude et évaluation d'une architecture Big Data pour la maintenance prédictive des équipements industriels</p>
+</div>
+
+<div class="meta">
+  <div><b>Matière :</b> Big Data Frameworks &amp; NoSQL</div>
+  <div><b>Étudiant :</b> Ayoub Gaouet · 3<sup>e</sup> année, cycle ingénieur</div>
+  <div><b>Séance de suivi :</b> S10</div>
+  <div><b>Date :</b> 7 novembre 2026</div>
+</div>
+
+<div class="resume">
+  <b>En résumé.</b> L'environnement Big Data est en place et le premier flux fonctionne de bout en bout :
+  un simulateur de 20 machines envoie ses mesures dans Kafka, Logstash les transforme et les indexe
+  dans Elasticsearch, et Spark Structured Streaming calcule des moyennes par minute. Une panne injectée
+  apparaît dans les données en moins de 5 secondes. Le jeu de données public prévu (Microsoft Azure
+  Predictive Maintenance) est téléchargé, contrôlé et préparé pour les 20 machines du projet.
+  Prochaines étapes : Cassandra, Redis, détection d'anomalies et envoi des alertes vers Odoo.
+</div>
+
+<h2>1. État d'avancement</h2>
+<table>
+  <tr><th style="width:30%">Composant (cahier des charges)</th><th style="width:13%">État</th><th>Détail</th></tr>
+  <tr><td>Environnement Docker</td><td><span class="etat fait">Fait</span></td><td>Pile du cours, versions identiques, démarrage en une commande.</td></tr>
+  <tr><td>Ingestion Kafka</td><td><span class="etat fait">Fait</span></td><td>3 topics créés ; flux <code>sensor.readings</code> actif.</td></tr>
+  <tr><td>Simulateur IoT (§ 8.2)</td><td><span class="etat fait">Fait</span></td><td>20 machines, pannes et dérive injectables, débit réglable.</td></tr>
+  <tr><td>Jeu de données public (§ 8.3)</td><td><span class="etat fait">Fait</span></td><td>Téléchargé, contrôlé, préparé ; pas encore chargé dans une base.</td></tr>
+  <tr><td>Pipeline Logstash <code>sensors</code></td><td><span class="etat fait">Fait</span></td><td>Kafka → Elasticsearch, file persistante, DLQ, idempotence.</td></tr>
+  <tr><td>Elasticsearch (mapping explicite)</td><td><span class="etat fait">Fait</span></td><td>Index template, un index par jour, statut green.</td></tr>
+  <tr><td>Spark Structured Streaming</td><td><span class="etat partiel">Partiel</span></td><td>Moyennes par machine sur 1 minute ; détection d'anomalies à faire.</td></tr>
+  <tr><td>Tableau de bord Kibana</td><td><span class="etat partiel">Partiel</span></td><td>Données prêtes et procédure rédigée ; tableau de bord à construire.</td></tr>
+  <tr><td>Cassandra, Redis (§ 7.4, 7.5)</td><td><span class="etat afaire">À faire</span></td><td>Séance suivante.</td></tr>
+  <tr><td>Alertes vers Odoo (§ 9.1)</td><td><span class="etat afaire">À faire</span></td><td>Topic <code>maintenance.alerts</code> déjà créé ; connecteur à écrire.</td></tr>
+  <tr><td>Spark batch (MTBF, score de santé)</td><td><span class="etat afaire">À faire</span></td><td>Utilisera l'historique Kaggle préparé.</td></tr>
+  <tr><td>Kafka à 3 brokers, tests de performance et de panne</td><td><span class="etat afaire">À faire</span></td><td>Sections 10.2 et 10.3.</td></tr>
+</table>
+
+<h2>2. Architecture en place</h2>
+<figure>
+  <img src="../images/architecture_flux.svg" alt="Schéma du flux de données">
+  <figcaption>Figure 1 · Flux en place à la séance S10. Traits pleins : en place et vérifié ; pointillés : prévu aux prochaines séances.</figcaption>
+</figure>
+<p>Le flux se lit de gauche à droite. Sous Windows, le simulateur envoie chaque seconde une mesure JSON par
+machine dans le topic <code>sensor.readings</code>. Deux consommateurs indépendants lisent ce topic, chacun
+dans son propre groupe : Logstash, qui indexe dans Elasticsearch pour Kibana, et Spark, qui calcule des
+agrégats en continu. Kafka sert de tampon : si un traitement s'arrête, les messages l'attendent.</p>
+
+<h2>3. Travaux réalisés</h2>
+
+<h3>3.1 Environnement</h3>
+<p>Le <code>docker-compose.yaml</code> du cours (édition du Lab 2, qui contient Logstash) a été copié dans le
+projet ; le fichier d'origine n'est pas modifié. Les versions sont conservées à l'identique :</p>
+<table>
+  <tr><th>Composant</th><th>Version</th><th>Composant</th><th>Version</th></tr>
+  <tr><td>Kafka, ZooKeeper (Confluent)</td><td>7.5.0</td><td>Kafka UI</td><td>0.7.2</td></tr>
+  <tr><td>Elasticsearch, Logstash, Kibana</td><td>8.17.0</td><td>Spark (Jupyter PySpark)</td><td>3.3.0</td></tr>
+  <tr><td>Connecteur Spark-Kafka</td><td colspan="3"><code>org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0</code></td></tr>
+</table>
+<p>Adaptations : projet Docker renommé <code>predimaint</code> (volumes séparés de ceux des labs), profils
+<code>pipeline</code> et <code>spark</code> (Spark démarré seulement à la demande, pour économiser la mémoire),
+création automatique de topics désactivée, et ports de Kafka UI et Jupyter déplacés (8090, 8890) car une
+machine virtuelle occupait déjà 8080, 8081 et 8888.</p>
+
+<h3>3.2 Ingestion avec Kafka</h3>
+<table>
+  <tr><th>Topic</th><th>Partitions</th><th>Réplication</th><th>Rôle</th></tr>
+  <tr><td><code>sensor.readings</code></td><td>6</td><td>1</td><td>Mesures des capteurs ; clé = identifiant machine (ordre garanti par machine)</td></tr>
+  <tr><td><code>maintenance.alerts</code></td><td>3</td><td>1</td><td>Alertes détectées par Spark (prochaine étape)</td></tr>
+  <tr><td><code>odoo.events</code></td><td>3</td><td>1</td><td>Demandes créées et clôturées dans Odoo (prochaine étape)</td></tr>
+</table>
+<p class="note">La réplication est de 1 car l'environnement compte un seul broker ; elle passera à 3 avec le cluster de 3 brokers.</p>
+
+<h3>3.3 Données</h3>
+<p><b>Simulateur.</b> Il reproduit les 20 machines du projet, avec les mêmes identifiants que dans Odoo
+(<code>PRESSE-01</code> à <code>POMPE-05</code>). Chaque grandeur (température, vibration, pression, puissance,
+bruit) vaut : valeur nominale + cycle de production + bruit aléatoire. On peut ajouter une dérive lente
+(usure) ou injecter en direct une panne (surchauffe, vibration ou surpression), avec une montée progressive
+sur 15 secondes. Le débit est réglable pour les futurs tests de performance.</p>
+<p><b>Jeu de données public.</b> Le jeu <i>Microsoft Azure Predictive Maintenance</i> (Kaggle, publié par
+Microsoft en 2016) apporte un historique réel de pannes datées.</p>
+<div class="chiffres">
+  <div class="chiffre"><b>876 100</b><span>mesures horaires, 100 machines, année 2015</span></div>
+  <div class="chiffre"><b>0</b><span>valeur manquante, doublon ou trou dans la série</span></div>
+  <div class="chiffre"><b>175 220</b><span>mesures conservées pour nos 20 machines</span></div>
+  <div class="chiffre"><b>243</b><span>pannes datées pour nos 20 machines</span></div>
+</div>
+<p>Le jeu comporte 4 modèles de machines, comme nos 4 catégories : pour chaque modèle, les 5 machines ayant le
+plus de pannes ont été retenues (historique le plus riche pour le MTBF), puis renommées avec les identifiants
+du projet. Les grandeurs du jeu (tension, rotation, pression, vibration) sont conservées telles quelles.</p>
+
+<h3>3.4 Transformation et indexation (Logstash, Elasticsearch)</h3>
+<ul>
+  <li><b>Entrée</b> : lecture de <code>sensor.readings</code> dans le groupe <code>logstash-predimaint</code>, décodage JSON.</li>
+  <li><b>Filtres</b> : l'heure de la mesure devient <code>@timestamp</code> ; conversion des types ; catégorie déduite de l'identifiant ; niveau <i>normal</i>, <i>surveillance</i> ou <i>critique</i> calculé à partir des seuils définis dans Odoo.</li>
+  <li><b>Sortie</b> : un index par jour <code>predimaint-sensors-AAAA.MM.JJ</code>, avec un identifiant de document <code>topic-partition-offset</code> qui évite les doublons en cas de relecture.</li>
+  <li><b>Fiabilité</b> : file persistante sur disque et file des documents refusés (DLQ).</li>
+  <li><b>Mapping explicite</b> par index template (keyword, float, date), créé avant le premier document ; 1 shard, 0 réplica (un seul nœud).</li>
+</ul>
+
+<h3>3.5 Traitement en continu (Spark Structured Streaming)</h3>
+<p>Un job lit le même topic et calcule, toutes les 10 secondes, la moyenne de chaque grandeur et la température
+maximale par machine, sur des fenêtres d'une minute basées sur l'heure de la mesure. Un watermark de 2 minutes
+accepte les mesures en retard tout en libérant la mémoire des fenêtres closes.</p>
+
+<h2>4. Résultats des vérifications</h2>
+<table>
+  <tr><th style="width:30%">Vérification</th><th>Résultat mesuré</th></tr>
+  <tr><td>Services</td><td>Elasticsearch, Kibana, Logstash, Kafka UI, Kafka et ZooKeeper répondent ; cluster Elasticsearch <b>green</b>.</td></tr>
+  <tr><td>Débit d'indexation</td><td>Compteur Elasticsearch : 10 140 → 10 260 → 10 360 documents en 12 s, soit environ 20 documents par seconde, le débit du simulateur.</td></tr>
+  <tr><td>Retard de Logstash</td><td>6 à 12 messages par partition, soit moins d'une seconde.</td></tr>
+  <tr><td>Absence de perte</td><td>Logstash démarré 7 minutes après le simulateur : les 9 880 messages en attente dans Kafka ont tous été indexés.</td></tr>
+  <tr><td>Panne injectée (surchauffe)</td><td>Température maximale par tranche de 5 s : 80 → 96 → 116 → 130 → 131 °C ; niveau <i>surveillance</i> puis <i>critique</i> ; visible dans Elasticsearch en moins de 5 s.</td></tr>
+  <tr><td>Fausses alertes</td><td>Aucune machine hors panne ne dépasse un seuil sur 15 minutes (requête Elasticsearch en 4 ms).</td></tr>
+  <tr><td>Spark Streaming</td><td>11 micro-lots en 100 s, 20 machines par fenêtre, aucune erreur.</td></tr>
+  <tr><td>Reprise après redémarrage</td><td>Après arrêt et redémarrage de la pile : données conservées (25 380 documents), puis 300 messages envoyés = 300 documents indexés.</td></tr>
+</table>
+
+<h2>5. Choix techniques</h2>
+<table>
+  <tr><th style="width:30%">Choix</th><th>Justification</th></tr>
+  <tr><td>Kafka entre les capteurs et les traitements</td><td>Découplage, tampon en cas d'arrêt, plusieurs consommateurs indépendants, relecture possible.</td></tr>
+  <tr><td>Clé Kafka = identifiant machine</td><td>Toutes les mesures d'une machine vont dans la même partition : leur ordre est conservé.</td></tr>
+  <tr><td>Logstash pour l'indexation</td><td>Configuration déclarative, file persistante, DLQ, supervision par API (Lab 2).</td></tr>
+  <tr><td>Mapping explicite avant indexation</td><td>Types corrects dès le premier document (Lab 1) ; pas de devinette d'Elasticsearch.</td></tr>
+  <tr><td>Identifiant de document déterministe</td><td>Une relecture après panne réécrit le même document au lieu de créer un doublon.</td></tr>
+  <tr><td>Simulateur et jeu public</td><td>Le simulateur permet de contrôler pannes et débit ; le jeu public apporte un historique réaliste de pannes.</td></tr>
+  <tr><td>Elasticsearch hors des bases NoSQL exigées</td><td>Il sert à la recherche et à la visualisation ; les deux bases NoSQL seront Cassandra et Redis.</td></tr>
+</table>
+
+<h2>6. Difficultés rencontrées et solutions</h2>
+<table>
+  <tr><th style="width:30%">Difficulté</th><th>Solution retenue</th></tr>
+  <tr><td>Logstash absent du compose de base du cours</td><td>Utilisation de l'édition du Lab 2, qui contient Logstash 8.17.0.</td></tr>
+  <tr><td>Ports 8080, 8081 et 8888 refusés par Docker</td><td>Cause identifiée : redirections d'une machine virtuelle VirtualBox. Kafka UI et Jupyter déplacés sur 8090 et 8890.</td></tr>
+  <tr><td>Mémoire limitée (environ 1 Go libre)</td><td>Profils Docker : Spark démarré seulement à la demande.</td></tr>
+  <tr><td>Téléchargement du connecteur Spark trop long et cache non partagé</td><td>Cache des paquets Maven placé dans le dossier du projet (<code>spark.jars.ivy</code>).</td></tr>
+  <tr><td>Licence du jeu Kaggle indiquée « Unknown »</td><td>Données complètes non redistribuées ; seuls un extrait de 48 h et le script de préparation sont joints.</td></tr>
+</table>
+
+<h2>7. Limites actuelles</h2>
+<ul>
+  <li>Un seul broker Kafka (réplication 1) : pas encore de tolérance aux pannes.</li>
+  <li>Les seuils sont recopiés dans Logstash ; ils seront lus dans Redis, synchronisé depuis Odoo.</li>
+  <li>Le jeu public est synthétique et mesure d'autres grandeurs que le simulateur (une mesure par heure).</li>
+  <li>Une chute de pression n'est pas encore détectée : seuls des seuils hauts sont définis.</li>
+</ul>
+
+<h2>8. Prochaines étapes</h2>
+<table>
+  <tr><th style="width:8%">#</th><th>Travail prévu</th><th style="width:22%">Référence</th></tr>
+  <tr><td>1</td><td>Cassandra (mesures et agrégats par machine) et Redis (dernières valeurs, seuils, alertes actives).</td><td>§ 7.4, 7.5</td></tr>
+  <tr><td>2</td><td>Détection d'anomalies dans Spark (seuils et écart à la moyenne), publication dans <code>maintenance.alerts</code>, point de reprise.</td><td>§ 7.2</td></tr>
+  <tr><td>3</td><td>Connecteur vers Odoo : création des demandes d'intervention prédictives ; pipeline Logstash <code>alerts</code>.</td><td>§ 9.1, 7.6</td></tr>
+  <tr><td>4</td><td>Chargement de l'historique Kaggle ; Spark batch : MTBF, disponibilité, score de santé.</td><td>§ 7.3, 8.3</td></tr>
+  <tr><td>5</td><td>Tableau de bord Kibana temps réel.</td><td>§ 7.6</td></tr>
+  <tr><td>6</td><td>Kafka à 3 brokers ; tests de performance et de tolérance aux pannes.</td><td>§ 10.2, 10.3</td></tr>
+</table>
+
+<h2>Annexe · Reproduire le déploiement</h2>
+<pre>cd "Mini Projet Big Data"
+powershell -ExecutionPolicy Bypass -File .\scripts\demarrer.ps1     # pile, index template, topics
+powershell -ExecutionPolicy Bypass -File .\scripts\verifier.ps1     # contrôle des services
+cd simulator ; py -3.12 -m venv .venv ; .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe simulateur.py                           # flux temps réel
+.\.venv\Scripts\python.exe simulateur.py --panne COMP-03 --type surchauffe   # 2e terminal : panne
+py -3.12 -I ..\data_prep\preparer_donnees.py                       # préparation du jeu Kaggle</pre>
+<p class="note">Les commandes détaillées sont dans <code>README.md</code> ; la description des données dans <code>docs/donnees.md</code>.</p>
+
+</body>
+</html>
