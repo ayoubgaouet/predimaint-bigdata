@@ -1,5 +1,6 @@
 ﻿# Démarre la pile de la démo en une commande : Kafka, Kafka UI, Elasticsearch, Kibana, Logstash,
-# puis crée les topics et l'index template (opérations idempotentes, sans risque si déjà faites).
+# Cassandra et Redis, puis crée les topics, l'index template, le schéma Cassandra et les seuils Redis
+# (opérations idempotentes, sans risque si déjà faites).
 # Ajouter -Spark pour démarrer aussi Jupyter/Spark.
 param([switch]$Spark)
 
@@ -20,4 +21,5 @@ if ($LASTEXITCODE -ne 0) { throw "Démarrage incomplet : docker compose -f `"$co
 
 & (Join-Path $PSScriptRoot "creer_index_template.ps1")
 & (Join-Path $PSScriptRoot "creer_topics.ps1")
+& (Join-Path $PSScriptRoot "initialiser_stockage.ps1")
 docker compose -f "$compose" ps --format "table {{.Service}}\t{{.Status}}"

@@ -117,3 +117,65 @@ injectée qui apparaît dans les données. Cassandra et Redis : séance suivante
 | 100 machines dans le jeu, 20 dans le projet | 4 modèles = 4 catégories ; pour chaque modèle, les 5 machines qui ont le plus de pannes | Correspondance simple à expliquer ; historique le plus riche pour le MTBF. |
 | Grandeurs différentes du simulateur | Grandeurs du jeu conservées (tension, rotation, pression, vibration) | Les convertir en température ou en puissance serait inventer des données. |
 | Données synthétiques | Signalé dans `docs/donnees.md` et à dire en soutenance | Elles servent à construire la chaîne, pas à conclure sur une vraie usine. |
+
+---
+
+## Séance S16 : dimanche 29/11/2026 · Stockage NoSQL (Cassandra et Redis)
+
+*Travail préparé le 24/11/2026.*
+
+### Objectif
+
+Ajouter les deux bases NoSQL du cahier des charges (section 7.4) et leur modèle de données
+(section 7.5) : Cassandra pour les séries temporelles, Redis pour les accès très rapides.
+
+### Ce qui est réalisé
+
+| Élément | Détail |
+| --- | --- |
+| Services | `cassandra:4.1.7` et `redis:7.4.1` ajoutés au docker-compose (profils `pipeline` et `complet`), versions fixes. |
+| Cassandra | Keyspace `predimaint` (réplication 1, un seul nœud) et 4 tables conçues à partir des requêtes : `readings_by_machine`, `aggregates_by_machine`, `health_by_day`, `events_by_machine` (`cassandra/schema.cql`). |
+| Redis | Persistance AOF synchronisée chaque seconde ; clés `threshold:<categorie>` (19 seuils) et `machine:<id>` (20 machines) ; clés prévues pour S18 : `last:<id>`, `alerts:active`, canal `alerts` (`redis/STRUCTURES.md`). |
+| Chargement des seuils | `redis/charger_seuils.py` : depuis Odoo par XML-RPC (`--odoo`) ou depuis la copie de référence ; aucune bibliothèque à installer (passe par `redis-cli`). |
+| Automatisation | `scripts/initialiser_stockage.ps1`, appelé par `scripts/demarrer.ps1` : la pile complète démarre toujours en une commande. |
+| Vérification | `scripts/verifier.ps1` contrôle aussi Cassandra et Redis. |
+
+### Résultats des vérifications
+
+| Vérification | Résultat |
+| --- | --- |
+| Services | 8 services en bonne santé, dont Cassandra 4.1.7 et Redis 7.4.1 (réponse `PONG`). |
+| Schéma | `DESCRIBE TABLES` : les 4 tables existent dans `predimaint`. |
+| Requête Q1 | 2 mesures écrites pour COMP-03, relues par `WHERE machine_id='COMP-03' AND day='2026-11-24'` dans l'ordre le plus récent d'abord ; mesures de test supprimées ensuite. |
+| Redis | `HGETALL threshold:compresseurs` : 10 champs (température 90/105, vibration 4,5/7,1…) ; `HGETALL machine:COMP-03` : compresseurs, Équipe mécanique ; 24 clés. |
+| AOF | `appendonly = yes`, `appendfsync = everysec`. |
+| Mémoire | Cassandra environ 1 Go, Redis environ 4 Mo. |
+
+### Difficultés rencontrées
+
+1. **Docker Desktop plantait au démarrage** : « initializing Inference manager … remove …\Docker\run\dockerInference: The file cannot be accessed by the system ».
+2. Ce fichier est un point de connexion (reparse point) resté d'un arrêt précédent : ni `del` ni `fsutil reparsepoint delete` ne pouvaient le supprimer (« accès refusé »).
+
+### Solutions testées et correction retenue
+
+| Essai | Résultat |
+| --- | --- |
+| Suppression du fichier (`del /f`) | Refusée |
+| `fsutil reparsepoint delete` | Refusée (erreur 1920) |
+| **Renommer le dossier `Docker\run`** | **Accepté** : Docker recrée un dossier neuf et démarre normalement |
+
+### Choix à justifier
+
+- **Clé de partition `(machine_id, day)`** : une partition contient au plus une journée d'une machine
+  (86 400 mesures à 1 mesure/s) ; elle ne grossit pas sans fin, et la requête « mesures d'une machine
+  sur une journée » lit une seule partition.
+- **Une table par requête** : en NoSQL orienté colonnes, on duplique les données pour que chaque
+  lecture soit directe, au lieu de faire des jointures (que Cassandra ne propose pas).
+- **Réplication 1** : un seul nœud pour l'instant ; passage à 3 nœuds et `QUORUM` prévu pour les tests de panne.
+- **Redis en AOF chaque seconde** : au plus environ une seconde d'écritures perdue en cas d'arrêt brutal.
+- **Seuils copiés d'Odoo vers Redis** : Spark les lira en moins d'une milliseconde, sans interroger Odoo à chaque mesure.
+
+### Prochaine étape (S17, même jour)
+
+Charger l'historique Kaggle préparé (175 220 mesures, 243 pannes, 671 interventions, 878 erreurs)
+dans `readings_by_machine` et `events_by_machine`, puis interroger une machine et une journée.

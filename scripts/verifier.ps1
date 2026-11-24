@@ -24,3 +24,9 @@ $brokers = docker compose -f "$compose" exec -T kafka kafka-broker-api-versions 
 if ($brokers) { Write-Host "[OK]  Kafka          $($brokers.Count) broker(s) : $($brokers -join ' ')" } else { Write-Host "[KO]  Kafka" }
 $zk = docker compose -f "$compose" exec -T zookeeper bash -c "echo srvr | nc -w 2 localhost 2181 | head -1" 2>$null
 if ($zk) { Write-Host "[OK]  ZooKeeper      $zk" } else { Write-Host "[--]  ZooKeeper      (vérifié indirectement par Kafka)" }
+
+$cv = docker compose -f "$compose" exec -T cassandra cqlsh -e "SELECT release_version FROM system.local" 2>$null | Select-String '^\s*\d+\.\d+'
+if ($cv) { Write-Host "[OK]  Cassandra      version $($cv.Line.Trim())" } else { Write-Host "[KO]  Cassandra" }
+$rp = docker compose -f "$compose" exec -T redis redis-cli ping 2>$null
+$rv = docker compose -f "$compose" exec -T redis redis-cli INFO server 2>$null | Select-String '^redis_version:'
+if ($rp -match 'PONG') { Write-Host "[OK]  Redis          $($rv.Line.Trim()), réponse $rp" } else { Write-Host "[KO]  Redis" }

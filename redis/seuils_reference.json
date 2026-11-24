@@ -1,0 +1,15 @@
+{
+  "_commentaire": "Copie des seuils saisis dans Odoo (module predimaint, data/predimaint_data.xml). Source de secours quand Odoo n'est pas joignable.",
+  "seuils": {
+    "presses":      {"temperature": [60, 75],  "vibration": [4.5, 7.1], "pression": [180, 200], "puissance_kw": [45, 55],   "bruit_db": [85, 95]},
+    "compresseurs": {"temperature": [90, 105], "vibration": [4.5, 7.1], "pression": [8.5, 10],  "puissance_kw": [33, 39],   "bruit_db": [80, 90]},
+    "convoyeurs":   {"temperature": [70, 85],  "vibration": [2.8, 4.5],                          "puissance_kw": [7.5, 9.5], "bruit_db": [75, 85]},
+    "pompes":       {"temperature": [65, 80],  "vibration": [2.8, 4.5], "pression": [6, 7.5],   "puissance_kw": [15, 18.5], "bruit_db": [80, 90]}
+  },
+  "machines": {
+    "PRESSE": {"categorie": "presses",      "equipe": "Équipe mécanique"},
+    "COMP":   {"categorie": "compresseurs", "equipe": "Équipe mécanique"},
+    "CONV":   {"categorie": "convoyeurs",   "equipe": "Équipe électrique"},
+    "POMPE":  {"categorie": "pompes",       "equipe": "Équipe électrique"}
+  }
+}

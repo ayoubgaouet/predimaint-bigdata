@@ -3,7 +3,8 @@
 Mini-projet *Big Data Frameworks & NoSQL* : « Étude et évaluation d'une architecture Big Data
 pour la maintenance prédictive des équipements industriels ».
 Flux actuel : **simulateur → Kafka → Logstash → Elasticsearch → Kibana**, et Spark Structured
-Streaming en lecture de Kafka. Schéma et justification des choix : `docs/architecture.md`.
+Streaming en lecture de Kafka. Stockage NoSQL en place : **Cassandra** (séries temporelles) et
+**Redis** (seuils, dernières valeurs, alertes). Schéma et justification des choix : `docs/architecture.md`.
 
 ## Contenu
 
@@ -11,7 +12,11 @@ Streaming en lecture de Kafka. Schéma et justification des choix : `docs/archit
 | --- | --- |
 | `docker-compose.yaml` | Copie de travail du compose du cours (édition Lab 2), projet `predimaint` |
 | `reference/docker-compose.cours-lab2.yaml` | Copie intacte du fichier du cours, pour comparaison |
-| `scripts/demarrer.ps1` | Démarre la pile, crée l'index template et les topics (une commande) |
+| `scripts/demarrer.ps1` | Démarre la pile, crée l'index template, les topics, le schéma Cassandra et les seuils Redis (une commande) |
+| `scripts/initialiser_stockage.ps1` | Applique le schéma Cassandra et charge les seuils dans Redis |
+| `cassandra/schema.cql` | Keyspace `predimaint` et ses 4 tables, conçues à partir des requêtes |
+| `redis/charger_seuils.py` | Charge seuils et machines dans Redis, depuis Odoo (`--odoo`) ou le fichier de référence |
+| `redis/STRUCTURES.md` | Description des clés Redis |
 | `scripts/creer_topics.ps1` | Crée `sensor.readings` (6), `maintenance.alerts` (3), `odoo.events` (3) |
 | `scripts/creer_index_template.ps1` | Crée le template `predimaint-sensors` (mapping explicite) |
 | `scripts/verifier.ps1` | Vérifie que chaque service répond |
@@ -30,6 +35,7 @@ Streaming en lecture de Kafka. Schéma et justification des choix : `docs/archit
 Elasticsearch, Kibana et Logstash **8.17.0** · Kafka et ZooKeeper Confluent **7.5.0** ·
 Kafka UI **v0.7.2** · Jupyter PySpark **spark-3.3.0** · Python **3.12** pour le simulateur ·
 connecteur Spark **org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0**.
+Ajouts du projet, hors fichier du cours : Cassandra **4.1.7** et Redis **7.4.1** (versions fixes).
 
 ## Adresses
 
@@ -43,6 +49,8 @@ connecteur Spark **org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0**.
 | API Logstash | http://localhost:9600 |
 | JupyterLab | http://localhost:8890 (token `bigdata-lab-2026`, celui du cours) |
 | Spark UI | http://localhost:4040 (quand un job tourne) |
+| Cassandra (CQL) | `localhost:9042` ; console : `docker compose exec cassandra cqlsh -k predimaint` |
+| Redis | `localhost:6379` ; console : `docker compose exec redis redis-cli` |
 
 Kafka UI et Jupyter ne sont pas sur 8080 et 8888 comme dans le cours : la VM VirtualBox
 `mlops-vm` redirige déjà 8080, 8081 et 8888 sur ce PC.
@@ -173,7 +181,7 @@ persistante de Logstash).
 
 ## Mémoire
 
-Pile `pipeline` : environ 4 Go (Elasticsearch 1,5 Go, Logstash 0,9 Go, Kibana 0,7 Go,
-Kafka 0,5 Go, Kafka UI 0,3 Go). Jupyter/Spark ajoute 1 à 2 Go : le démarrer seulement
+Pile `pipeline` : environ 5 Go (Elasticsearch 1,5 Go, Cassandra 1 Go, Logstash 0,9 Go, Kibana 0,7 Go,
+Kafka 0,5 Go, Kafka UI 0,3 Go, Redis quelques Mo). Jupyter/Spark ajoute 1 à 2 Go : le démarrer seulement
 quand on en a besoin. La VM `mlops-vm` occupe à elle seule environ 8 Go : l'arrêter avant la
 démo si la mémoire manque.

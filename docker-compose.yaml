@@ -12,6 +12,8 @@
 #     redirige déjà 8080, 8081 et 8888.
 #  5. Logstash : monte les pipelines du projet ; Jupyter monte le dossier spark\ et garde
 #     en cache le paquet spark-sql-kafka dans spark/.ivy2 (option spark.jars.ivy).
+#  6. Ajouts du projet (hors fichier du cours) : Cassandra 4.1.7 et Redis 7.4.1, versions fixes,
+#     pour le stockage NoSQL (séance S16). Schéma Cassandra dans cassandra/schema.cql.
 #
 # Démarrage : docker compose --profile pipeline up -d --pull never --wait --wait-timeout 600
 # Arrêt     : docker compose --profile complet stop     (jamais « down -v »)
@@ -154,6 +156,58 @@ services:
       timeout: 10s
       retries: 30
       start_period: 60s
+  # ------------------------------------------------------------------ Stockage NoSQL (S16)
+  # Cassandra : séries temporelles (mesures brutes, agrégats par minute, santé par jour).
+  # Un seul nœud pour l'instant (réplication 1) ; tas Java limité pour ménager la mémoire du PC.
+  cassandra:
+    image: cassandra:4.1.7
+    environment:
+      CASSANDRA_CLUSTER_NAME: predimaint
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 128M
+    ports:
+    - 127.0.0.1:9042:9042
+    profiles:
+    - complet
+    - pipeline
+    restart: unless-stopped
+    volumes:
+    - cassandra-data:/var/lib/cassandra
+    - ./cassandra:/schema:ro
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - cqlsh -e "DESCRIBE KEYSPACES" >/dev/null 2>&1
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 90s
+  # Redis : dernières valeurs, seuils, alertes actives, canal de notification.
+  # Persistance AOF synchronisée chaque seconde : au plus ~1 s d'écritures perdues en cas d'arrêt brutal.
+  redis:
+    image: redis:7.4.1
+    command:
+    - redis-server
+    - --appendonly
+    - 'yes'
+    - --appendfsync
+    - everysec
+    ports:
+    - 127.0.0.1:6379:6379
+    profiles:
+    - complet
+    - pipeline
+    restart: unless-stopped
+    volumes:
+    - redis-data:/data
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 10s
+      timeout: 5s
+      retries: 30
   ed-pyspark-jupyter:
     image: jupyter/pyspark-notebook:spark-3.3.0
     user: root
@@ -180,3 +234,5 @@ volumes:
   zk-data: {}
   zk-log: {}
   logstash-data: {}
+  cassandra-data: {}
+  redis-data: {}
